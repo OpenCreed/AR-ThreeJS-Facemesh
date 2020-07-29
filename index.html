@@ -12,45 +12,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================-->
+<!DOCTYPE html>
+<html>
 
 <head>
-<style>
-  .canvas-wrapper, #threejs-container {
-    display: inline-block;
-    vertical-align: top;
-  }
-
-  #threejs-container {
-    border: solid 1px black;
-    position: relative;
-  }
-
-  /* center the canvas within its wrapper */
-  #threejs-container canvas {
-    transform: translate3d(-50%, -50%, 0);
-    left: 50%;
-    top: 50%;
-    position: absolute;
-  }
-</style>
+  <link rel="stylesheet" type="text/css" href="main.css">
 </head>
+
 <body>
-  <div id="main">
-    <div class="container">
-      <div class="canvas-wrapper">
-        <canvas id="output"></canvas>
-        <video id="video" playsinline style="
-          -webkit-transform: scaleX(-1);
-          transform: scaleX(-1);
-          visibility: hidden;
-          width: auto;
-          height: auto;
-          ">
-        </video>
-      </div>
-      <div id="threejs-container"></div>
+  <div class="container">
+    <div class="canvas-wrapper">
+      <canvas id="output"></canvas>
+      <video id="video" playsinline>
+      </video>
     </div>
+    <div id="threejs-container"></div>
   </div>
 </body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
 <script src="index.js"></script>
+
+</html>

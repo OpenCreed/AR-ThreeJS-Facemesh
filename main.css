@@ -1,0 +1,28 @@
+.canvas-wrapper, #threejs-container {
+    display: inline-block;
+    vertical-align: top;
+}
+
+#threejs-container, .canvas-wrapper {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
+/* center the canvas within its wrapper */
+#threejs-container canvas {
+    transform: translate3d(-50%, -50%, 0);
+    left: 50%;
+    top: 50%;
+    position: absolute;
+}
+
+#video {
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    visibility: hidden;
+    width: auto;
+    height: auto;
+}
