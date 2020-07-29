@@ -19,11 +19,10 @@ import * as facemesh from '@tensorflow-models/facemesh';
 import Stats from 'stats.js';
 import * as tf from '@tensorflow/tfjs-core';
 import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
+import * as three from 'three.js';
 // TODO(annxingyuan): read version from tfjsWasm directly once
 // https://github.com/tensorflow/tfjs/pull/2819 is merged.
 import {version} from '@tensorflow/tfjs-backend-wasm/dist/version';
-
-import {TRIANGULATION} from './triangulation';
 
 tfjsWasm.setWasmPath(
     `https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@${
@@ -35,22 +34,7 @@ function isMobile() {
   return isAndroid || isiOS;
 }
 
-function drawPath(ctx, points, closePath) {
-  const region = new Path2D();
-  region.moveTo(points[0][0], points[0][1]);
-  for (let i = 1; i < points.length; i++) {
-    const point = points[i];
-    region.lineTo(point[0], point[1]);
-  }
-
-  if (closePath) {
-    region.closePath();
-  }
-  ctx.stroke(region);
-}
-
-let model, ctx, videoWidth, videoHeight, video, canvas,
-    scatterGLHasInitialized = false, scatterGL;
+let model, ctx, videoWidth, videoHeight, video, canvas;
 
 const VIDEO_SIZE = 500;
 const mobile = isMobile();
@@ -80,13 +64,6 @@ function setupDatGui() {
   });
 
   gui.add(state, 'triangulateMesh');
-
-  if (renderPointcloud) {
-    gui.add(state, 'renderPointcloud').onChange(render => {
-      document.querySelector('#scatter-gl-container').style.display =
-          render ? 'inline-block' : 'none';
-    });
-  }
 }
 
 async function setupCamera() {
@@ -121,7 +98,7 @@ if (predictions.length > 0) {
     predictions.forEach(prediction => {
       const keypoints = prediction.scaledMesh;
     });
-    if (renderPointcloud && state.renderPointcloud && scatterGL != null) {
+    if (renderPointcloud && state.renderPointcloud) {
       const pointsData = predictions.map(prediction => {
         let scaledMesh = prediction.scaledMesh;
         return scaledMesh.map(point => ([-point[0], -point[1], -point[2]]));
@@ -140,139 +117,6 @@ if (predictions.length > 0) {
       }
 
 //add points here..
-var ab=[];
-ab.push(flattenedPointsData[143]); //0 eye
-ab.push(flattenedPointsData[113]); //1 eye
-ab.push(flattenedPointsData[225]); //2 eye
-ab.push(flattenedPointsData[224]);//3 eye
-ab.push(flattenedPointsData[223]);//4 eye
-ab.push(flattenedPointsData[222]);//5 eye
-ab.push(flattenedPointsData[221]);//6 eye
-ab.push(flattenedPointsData[193]);//7 eye
-ab.push(flattenedPointsData[6]); //8 center
-ab.push(flattenedPointsData[122]);//9 eye
-ab.push(flattenedPointsData[188]);//10 eye
-ab.push(flattenedPointsData[121]);//11 eye
-ab.push(flattenedPointsData[120]);//12 eye
-ab.push(flattenedPointsData[119]);//13 eye
-ab.push(flattenedPointsData[118]);//14 eye
-ab.push(flattenedPointsData[117]);//15 eye
-ab.push(flattenedPointsData[137]);//16 earlobe
-ab.push(flattenedPointsData[177]);//17 earlobe
-ab.push(flattenedPointsData[366]);//18 earlobe
-ab.push(flattenedPointsData[401]);//19 earlobe
-ab.push(flattenedPointsData[152]);//neck
-
-ctx.beginPath();
-ctx.moveTo(-1*ab[0][0],-1*ab[0][1]);
-ctx.bezierCurveTo(-1*ab[1][0],-1*ab[1][1],-1*ab[2][0],-1*ab[2][1],-1*ab[3][0],-1*ab[3][1],-1*ab[4][0],-1*ab[4][1],-1*ab[5][0],-1*ab[5][1],-1*ab[6][0],-1*ab[6][1],-1*ab[7][0],-1*ab[7][1],-1*ab[8][0],-1*ab[8][1],-1*ab[9][0],-1*ab[9][1],-1*ab[10][0],-1*ab[10][1],-1*ab[11][0],-1*ab[11][1],-1*ab[12][0],-1*ab[12][1],-1*ab[13][0],-1*ab[13][1],-1*ab[14][0],-1*ab[14][1],-1*ab[15][0],-1*ab[15][1]);
-ctx.lineTo(-1*ab[15][0],-1*ab[15][1]);
-ctx.lineTo(-1*ab[12][0],-1*ab[12][1]);
-ctx.lineTo(-1*ab[11][0],-1*ab[11][1]);
-ctx.lineTo(-1*ab[10][0],-1*ab[10][1]);
-ctx.lineTo(-1*ab[9][0],-1*ab[9][1]);
-ctx.lineTo(-1*ab[8][0],-1*ab[8][1]);
-ctx.lineTo(-1*ab[7][0],-1*ab[7][1]);
-ctx.lineTo(-1*ab[6][0],-1*ab[6][1]);
-ctx.lineTo(-1*ab[5][0],-1*ab[5][1]);
-ctx.lineTo(-1*ab[4][0],-1*ab[4][1]);
-ctx.lineTo(-1*ab[3][0],-1*ab[3][1]);
-ctx.lineTo(-1*ab[2][0],-1*ab[2][1]);
-ctx.lineTo(-1*ab[1][0],-1*ab[1][1]);
-ctx.closePath();
-ctx.fill();
-ctx.stroke();
-
-//var radius1=(1*(ab[16][1]-ab[17][1]))/2;
-//console.log(radius1);
-//ctx.beginPath();
-//ctx.arc(-1*ab[16][0],-1*ab[16][1],-1*ab[17][0],-1*ab[17][1],radius1);
-//ctx.fill();
-//ctx.stroke();
-
-
-
-//ear-offset
-ctx.beginPath();
-ctx.moveTo(-1*ab[16][0]-10,-1*ab[16][1]-10);
-ctx.lineTo(-1*ab[17][0]-10,-1*ab[17][1]-10);
-ctx.stroke();
-
-//ear-offset
-ctx.beginPath();
-ctx.linewidth=10;
-ctx.moveTo(-1*ab[18][0]+10,-1*ab[18][1]+10);
-ctx.lineTo(-1*ab[19][0]+10,-1*ab[19][1]+10);
-ctx.stroke();
-
-ctx.beginPath();
-ctx.moveTo(-1*ab[20][0],-1*ab[20][1]);
-ctx.lineTo(-1*ab[20][0],-1*ab[20][1]+40);
-ctx.stroke();
-
-//triangle code:
-
-ctx.beginPath();
-ctx.moveTo(-1*(ab[18][0]+ab[19][0]-20)/2,-1*(ab[18][1]+ab[19][1]-20)/2);
-ctx.lineTo(-1*(ab[16][0]+ab[17][0]+20)/2,-1*(ab[16][1]+ab[17][1]+20)/2);
-ctx.lineTo(-1*ab[20][0],-1*ab[20][1]+40);
-ctx.closePath();
-ctx.stroke();
-
-console.log("upper: left earlobe: "+ab[16][0]+","+ab[16][1]);
-console.log("lower: left earlobe: "+ab[17][0]+","+ab[17][1]);
-console.log("upper: right earlobe: "+ab[18][0]+","+ab[18][1]);
-console.log("lower: right earlobe: "+ab[19][0]+","+ab[19][1]);
-
-var xy=[];
-xy.push(flattenedPointsData[372]);
-xy.push(flattenedPointsData[342]);
-xy.push(flattenedPointsData[445]);
-xy.push(flattenedPointsData[444]);
-xy.push(flattenedPointsData[443]);
-xy.push(flattenedPointsData[442]);
-xy.push(flattenedPointsData[441]);
-xy.push(flattenedPointsData[417]);
-xy.push(flattenedPointsData[6]);
-xy.push(flattenedPointsData[351]);
-xy.push(flattenedPointsData[412]);
-xy.push(flattenedPointsData[350]);
-xy.push(flattenedPointsData[349]);
-xy.push(flattenedPointsData[348]);
-xy.push(flattenedPointsData[347]);
-xy.push(flattenedPointsData[346]);
-
-ctx.beginPath();
-ctx.moveTo(-1*xy[0][0],-1*xy[0][1]);
-ctx.bezierCurveTo(-1*xy[1][0],-1*xy[1][1],-1*xy[2][0],-1*xy[2][1],-1*xy[3][0],-1*xy[3][1],-1*xy[4][0],-1*xy[4][1],-1*xy[5][0],-1*xy[5][1],-1*xy[6][0],-1*xy[6][1],-1*xy[7][0],-1*xy[7][1],-1*xy[8][0],-1*xy[8][1],-1*xy[9][0],-1*xy[9][1],-1*xy[10][0],-1*xy[10][1],-1*xy[11][0],-1*xy[11][1],-1*xy[12][0],-1*xy[12][1],-1*xy[13][0],-1*xy[13][1],-1*xy[14][0],-1*xy[14][1],-1*xy[15][0],-1*xy[15][1]);
-ctx.lineTo(-1*xy[15][0],-1*xy[15][1]);
-ctx.lineTo(-1*xy[12][0],-1*xy[12][1]);
-ctx.lineTo(-1*xy[11][0],-1*xy[11][1]);
-ctx.lineTo(-1*xy[10][0],-1*xy[10][1]);
-ctx.lineTo(-1*xy[9][0],-1*xy[9][1]);
-ctx.lineTo(-1*xy[8][0],-1*xy[8][1]);
-ctx.lineTo(-1*xy[7][0],-1*xy[7][1]);
-ctx.lineTo(-1*xy[6][0],-1*xy[6][1]);
-ctx.lineTo(-1*xy[5][0],-1*xy[5][1]);
-ctx.lineTo(-1*xy[4][0],-1*xy[4][1]);
-ctx.lineTo(-1*xy[3][0],-1*xy[3][1]);
-ctx.lineTo(-1*xy[2][0],-1*xy[2][1]);
-ctx.lineTo(-1*xy[1][0],-1*xy[1][1]);
-ctx.closePath();
-ctx.fill();
-ctx.stroke();
-
-const loader = new THREE.BufferGeometryLoader()
-loader.load('D:\tcs innovation\Glass Crayon\glasses.json',function(geometry, materials){});
-
-      const dataset = new ScatterGL.Dataset(flattenedPointsData);
-
-      if (!scatterGLHasInitialized) {
-        scatterGL.render(dataset);
-      } else {
-        scatterGL.updateDataset(dataset);
-      }
-      scatterGLHasInitialized = true;
     }
   }
 
@@ -307,20 +151,8 @@ async function main() {
   ctx.strokeStyle = '#32EEDB';
   ctx.lineWidth = 0.5;
   
-
-
-
   model = await facemesh.load({maxFaces: state.maxFaces});
   renderPrediction();
-
-  if (renderPointcloud) {
-    document.querySelector('#scatter-gl-container').style =
-        `width: ${VIDEO_SIZE}px; height: ${VIDEO_SIZE}px;`;
-
-    scatterGL = new ScatterGL(
-        document.querySelector('#scatter-gl-container'),
-        {'rotateOnStart': false, 'selectEnabled': false});
-  }
 };
 
 main();
