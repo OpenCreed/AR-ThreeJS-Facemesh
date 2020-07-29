@@ -14,23 +14,19 @@ limitations under the License.
 ==============================================================================-->
 
 <head>
-  <!-- Load three.js -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.106.2/build/three.min.js"></script>
-<!-- Load scatter-gl.js -->
-<script src="https://cdn.jsdelivr.net/npm/scatter-gl@0.0.1/lib/scatter-gl.min.js"></script>
 <style>
-  .canvas-wrapper, #scatter-gl-container {
+  .canvas-wrapper, #threejs-container {
     display: inline-block;
     vertical-align: top;
   }
 
-  #scatter-gl-container {
+  #threejs-container {
     border: solid 1px black;
     position: relative;
   }
 
   /* center the canvas within its wrapper */
-  #scatter-gl-container canvas {
+  #threejs-container canvas {
     transform: translate3d(-50%, -50%, 0);
     left: 50%;
     top: 50%;
@@ -52,7 +48,7 @@ limitations under the License.
           ">
         </video>
       </div>
-      <div id="scatter-gl-container"></div>
+      <div id="threejs-container"></div>
     </div>
   </div>
 </body>
