@@ -54,7 +54,7 @@ if (renderPointcloud) {
   state.renderPointcloud = true;
 }
 
-function setupDatGui() {
+async function setupDatGui() {
   const gui = new dat.GUI();
   gui.add(state, 'backend', ['wasm', 'webgl', 'cpu'])
     .onChange(async backend => {
@@ -110,27 +110,47 @@ async function renderPrediction() {
       for (let i = 0; i < pointsData.length; i++) {
         flattenedPointsData = flattenedPointsData.concat(pointsData[i]);
       }
-/*
-       for (let i = 0; i < 3; i++) {
-        if (i == 0) { console.log("centre x: " + flattenedPointsData[5][0]); console.log("left ear x: " + flattenedPointsData[161][0]); console.log("lefteye outer x: " + flattenedPointsData[246][0]); console.log("lefteye inner x: " + flattenedPointsData[189][0]); console.log("right ear x: " + flattenedPointsData[388][0]); console.log("righteye outer x: " + flattenedPointsData[466][0]); console.log("righteye inner x: " + flattenedPointsData[414][0]); }
-        else if (i == 1) { console.log("centre y: " + flattenedPointsData[5][1]); console.log("left ear y: " + flattenedPointsData[161][1]); console.log("lefteye outer y: " + flattenedPointsData[246][1]); console.log("lefteye inner y: " + flattenedPointsData[189][1]); console.log("right ear y: " + flattenedPointsData[388][1]); console.log("righteye outer y: " + flattenedPointsData[466][1]); console.log("righteye inner y: " + flattenedPointsData[414][1]); }
-        else { console.log("centre z: " + flattenedPointsData[5][2]); console.log("left ear z: " + flattenedPointsData[161][2]); console.log("lefteye outer z: " + flattenedPointsData[246][2]); console.log("lefteye inner z: " + flattenedPointsData[189][2]); console.log("right ear z: " + flattenedPointsData[388][2]); console.log("righteye outer z: " + flattenedPointsData[466][2]); console.log("righteye inner z: " + flattenedPointsData[414][2]); }
-      }
-*/
+
       //add points here..
-      //console.log("Nose tip: ", flattenedPointsData[1][1] + 480/2)
-      scene.children[6].position.x = (flattenedPointsData[1][0] + 640/2)/75;
-      scene.children[6].position.y = (flattenedPointsData[1][1] + 480/2)/30;
-      //scene.children[6].position.y = flattenedPointsData[161][1];
-      //scene.children[6].position.z = flattenedPointsData[168][2]/10 - 20;
+      scene.children[5].position.x = (flattenedPointsData[1][0] + 640 / 2) / 75;
+      scene.children[5].position.y = (flattenedPointsData[1][1] + 480 / 2) / 30;
     }
   }
 
   stats.end();
   renderer.render(scene, camera);
   requestAnimationFrame(renderPrediction);
-
 };
+
+async function initThreeJS() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera();
+  camera.position.x = 0;
+  camera.position.y = 0;
+  camera.position.z = 20;
+  var ambientLight = new THREE.AmbientLight(0x404040, 100);
+  scene.add(ambientLight);
+  var light1 = new THREE.PointLight(0xc4c4c4, 10);
+  light1.position.set(100, 100, 20);
+  scene.add(light1);
+  var light2 = new THREE.PointLight(0xc4c4c4, 10);
+  light2.position.set(100, -100, 20);
+  scene.add(light2);
+  var light3 = new THREE.PointLight(0xc4c4c4, 10);
+  light3.position.set(-100, 100, 20);
+  scene.add(light3);
+  var light4 = new THREE.PointLight(0xc4c4c4, 10);
+  light4.position.set(-100, -100, 20);
+  scene.add(light4);
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.getElementById("threejs-container").appendChild(renderer.domElement);
+  let gltf = await new GLTFLoader().loadAsync("leftear.glb");
+  let model = gltf.scene.children[2];
+  model.scale.set(0.6, 0.6, 0.6);
+  model.name = "leftear";
+  scene.add(model);
+}
 
 async function main() {
   await tf.setBackend(state.backend);
@@ -164,40 +184,5 @@ async function main() {
   model = await facemesh.load({ maxFaces: state.maxFaces });
   renderPrediction();
 };
-
-async function initThreeJS() {
-  scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera();
-  camera.position.x = 0;
-  camera.position.y = 0;
-  camera.position.z = 20;
-  var hlight = new THREE.AmbientLight(0x404040, 100);
-  scene.add(hlight);
-  var directionalLight = new THREE.DirectionalLight(0xffffff, 100);
-  directionalLight.position.set(0, 0, 1);
-  directionalLight.castShadow = true;
-  scene.add(directionalLight);
-  var light1 = new THREE.PointLight(0xc4c4c4, 10);
-  light1.position.set(100, 100, 20);
-  scene.add(light1);
-  var light2 = new THREE.PointLight(0xc4c4c4, 10);
-  light2.position.set(100, -100, 20);
-  scene.add(light2);
-  var light3 = new THREE.PointLight(0xc4c4c4, 10);
-  light3.position.set(-100, 100, 20);
-  scene.add(light3);
-  var light4 = new THREE.PointLight(0xc4c4c4, 10);
-  light4.position.set(-100, -100, 20);
-  scene.add(light4);
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.getElementById("threejs-container").appendChild(renderer.domElement);
-  let gltf = await new GLTFLoader().loadAsync("leftear.glb");
-  let model = gltf.scene.children[2];
-  model.scale.set(0.6,0.6,0.6);
-  model.name = "leftear";
-  scene.add(model);
-  console.log(scene.children[6])
-}
 
 main();
