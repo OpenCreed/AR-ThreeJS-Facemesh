@@ -146,7 +146,7 @@ async function main() {
   video.width = videoWidth;
   video.height = videoHeight;
 
-  initThreeJS();
+  await initThreeJS();
 
   canvas = document.getElementById('output');
   canvas.width = videoWidth;
@@ -165,7 +165,7 @@ async function main() {
   renderPrediction();
 };
 
-function initThreeJS() {
+async function initThreeJS() {
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera();
   camera.position.x = 0;
@@ -178,28 +178,26 @@ function initThreeJS() {
   directionalLight.castShadow = true;
   scene.add(directionalLight);
   var light1 = new THREE.PointLight(0xc4c4c4, 10);
-  light1.position.set(0, 300, 500);
+  light1.position.set(100, 100, 20);
   scene.add(light1);
   var light2 = new THREE.PointLight(0xc4c4c4, 10);
-  light2.position.set(500, 100, 0);
+  light2.position.set(100, -100, 20);
   scene.add(light2);
   var light3 = new THREE.PointLight(0xc4c4c4, 10);
-  light3.position.set(0, 100, -500);
+  light3.position.set(-100, 100, 20);
   scene.add(light3);
   var light4 = new THREE.PointLight(0xc4c4c4, 10);
-  light4.position.set(-500, 300, 500);
+  light4.position.set(-100, -100, 20);
   scene.add(light4);
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.getElementById("threejs-container").appendChild(renderer.domElement);
-  let loader = new GLTFLoader();
-  loader.load("leftear.glb", gltf => {
-    let model = gltf.scene.children[2];
-    model.scale.set(0.6,0.6,0.6);
-    model.name = "leftear";
-    scene.add(model);
-    console.log(scene.children[6])
-  })
+  let gltf = await new GLTFLoader().loadAsync("leftear.glb");
+  let model = gltf.scene.children[2];
+  model.scale.set(0.6,0.6,0.6);
+  model.name = "leftear";
+  scene.add(model);
+  console.log(scene.children[6])
 }
 
 main();
