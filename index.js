@@ -110,20 +110,26 @@ async function renderPrediction() {
       for (let i = 0; i < pointsData.length; i++) {
         flattenedPointsData = flattenedPointsData.concat(pointsData[i]);
       }
-
-      for (let i = 0; i < 3; i++) {
+/*
+       for (let i = 0; i < 3; i++) {
         if (i == 0) { console.log("centre x: " + flattenedPointsData[5][0]); console.log("left ear x: " + flattenedPointsData[161][0]); console.log("lefteye outer x: " + flattenedPointsData[246][0]); console.log("lefteye inner x: " + flattenedPointsData[189][0]); console.log("right ear x: " + flattenedPointsData[388][0]); console.log("righteye outer x: " + flattenedPointsData[466][0]); console.log("righteye inner x: " + flattenedPointsData[414][0]); }
         else if (i == 1) { console.log("centre y: " + flattenedPointsData[5][1]); console.log("left ear y: " + flattenedPointsData[161][1]); console.log("lefteye outer y: " + flattenedPointsData[246][1]); console.log("lefteye inner y: " + flattenedPointsData[189][1]); console.log("right ear y: " + flattenedPointsData[388][1]); console.log("righteye outer y: " + flattenedPointsData[466][1]); console.log("righteye inner y: " + flattenedPointsData[414][1]); }
         else { console.log("centre z: " + flattenedPointsData[5][2]); console.log("left ear z: " + flattenedPointsData[161][2]); console.log("lefteye outer z: " + flattenedPointsData[246][2]); console.log("lefteye inner z: " + flattenedPointsData[189][2]); console.log("right ear z: " + flattenedPointsData[388][2]); console.log("righteye outer z: " + flattenedPointsData[466][2]); console.log("righteye inner z: " + flattenedPointsData[414][2]); }
-
       }
-
+*/
       //add points here..
+      //console.log("Nose tip: ", flattenedPointsData[1][1] + 480/2)
+      scene.children[6].position.x = (flattenedPointsData[1][0] + 640/2)/75;
+      scene.children[6].position.y = (flattenedPointsData[1][1] + 480/2)/30;
+      //scene.children[6].position.y = flattenedPointsData[161][1];
+      //scene.children[6].position.z = flattenedPointsData[168][2]/10 - 20;
     }
   }
 
   stats.end();
+  renderer.render(scene, camera);
   requestAnimationFrame(renderPrediction);
+
 };
 
 async function main() {
@@ -139,6 +145,8 @@ async function main() {
   videoHeight = video.videoHeight;
   video.width = videoWidth;
   video.height = videoHeight;
+
+  initThreeJS();
 
   canvas = document.getElementById('output');
   canvas.width = videoWidth;
@@ -162,16 +170,16 @@ function initThreeJS() {
   camera = new THREE.PerspectiveCamera();
   camera.position.x = 0;
   camera.position.y = 0;
-  camera.position.z = 10;
+  camera.position.z = 20;
   var hlight = new THREE.AmbientLight(0x404040, 100);
   scene.add(hlight);
   var directionalLight = new THREE.DirectionalLight(0xffffff, 100);
-  directionalLight.position.set(0, 1, 0);
+  directionalLight.position.set(0, 0, 1);
   directionalLight.castShadow = true;
   scene.add(directionalLight);
-  var light = new THREE.PointLight(0xc4c4c4, 10);
-  light.position.set(0, 300, 500);
-  scene.add(light);
+  var light1 = new THREE.PointLight(0xc4c4c4, 10);
+  light1.position.set(0, 300, 500);
+  scene.add(light1);
   var light2 = new THREE.PointLight(0xc4c4c4, 10);
   light2.position.set(500, 100, 0);
   scene.add(light2);
@@ -185,18 +193,13 @@ function initThreeJS() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.getElementById("threejs-container").appendChild(renderer.domElement);
   let loader = new GLTFLoader();
-  loader.load("necklace.glb", gltf => {
-    model = gltf.scene.children[0];
-    model.scale.set(10,10,10);
-    scene.add(gltf.scene);
-    animate();
+  loader.load("leftear.glb", gltf => {
+    let model = gltf.scene.children[2];
+    model.scale.set(0.6,0.6,0.6);
+    model.name = "leftear";
+    scene.add(model);
+    console.log(scene.children[6])
   })
 }
 
-function animate() {
-  renderer.render(scene, camera);
-  requestAnimationFrame(animate);
-}
-
 main();
-initThreeJS();

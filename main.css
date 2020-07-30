@@ -10,7 +10,7 @@ body {
 }
 
 /* center the canvas within its wrapper */
-#threejs-container canvas {
+#threejs-container > canvas {
     transform: translate3d(-50%, -50%, 0);
     left: 50%;
     top: 50%;
@@ -18,11 +18,8 @@ body {
 }
 
 #video {
-    position: absolute;
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
-    visibility: hidden;
-    width: auto;
-    height: auto;
-    top: 0;
+    width: 0;
+    height: 0;
 }
