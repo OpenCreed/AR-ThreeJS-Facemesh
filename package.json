@@ -21,7 +21,8 @@
     "three": "^0.118.3"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "watch": "cross-env NODE_ENV=development parcel index.html --no-hmr --target browser"
   },
   "browser": {
     "crypto": false
@@ -29,7 +30,9 @@
   "devDependencies": {
     "cross-env": "^5.2.0",
     "eslint": "^4.19.1",
-    "eslint-config-google": "^0.9.1"
+    "eslint-config-google": "^0.9.1",
+    "parcel-bundler": "^1.12.4",
+    "typescript": "^3.9.7"
   },
   "eslintConfig": {
     "extends": "google",
