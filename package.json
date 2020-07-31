@@ -22,7 +22,7 @@
     "three-gltf-loader": "^1.111.0"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc"
   },
   "browser": {
     "crypto": false
