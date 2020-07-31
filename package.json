@@ -18,8 +18,7 @@
     "dat.gui": "^0.7.7",
     "stats": "^1.0.0",
     "stats.js": "^0.17.0",
-    "three": "^0.118.3",
-    "three-gltf-loader": "^1.111.0"
+    "three": "^0.118.3"
   },
   "scripts": {
     "build": "tsc"
