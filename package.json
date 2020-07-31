@@ -13,32 +13,24 @@
     "@tensorflow/tfjs-backend-wasm": "^1.5.2-alpha1",
     "@tensorflow/tfjs-converter": "^1.6.1",
     "@tensorflow/tfjs-core": "^1.6.1",
-    "dat-gui": "^0.5.0",
-    "parcel-plugin-static-files-copy": "^2.4.3",
+    "@types/dat.gui": "^0.7.5",
+    "@types/stats": "^0.16.30",
+    "dat.gui": "^0.7.7",
+    "stats": "^1.0.0",
     "stats.js": "^0.17.0",
     "three": "^0.118.3",
     "three-gltf-loader": "^1.111.0"
   },
   "scripts": {
-    "watch": "cross-env NODE_ENV=development parcel index.html --no-hmr --target browser",
-    "build": "cross-env NODE_ENV=production parcel build index.html --target browser --public-url ./",
-    "lint": "eslint .",
-    "link-local": "yalc link @tensorflow-models/facemesh"
+    "build": "tsc",
   },
   "browser": {
     "crypto": false
   },
   "devDependencies": {
-    "@babel/core": "7.7.5",
-    "@babel/plugin-transform-runtime": "^7.7.6",
-    "@babel/preset-env": "^7.7.6",
-    "babel-preset-env": "^1.7.0",
-    "clang-format": "~1.2.2",
     "cross-env": "^5.2.0",
     "eslint": "^4.19.1",
-    "eslint-config-google": "^0.9.1",
-    "parcel-bundler": "^1.12.4",
-    "yalc": "~1.0.0-pre.27"
+    "eslint-config-google": "^0.9.1"
   },
   "eslintConfig": {
     "extends": "google",
@@ -53,10 +45,6 @@
       "ecmaVersion": 8,
       "sourceType": "module"
     }
-  },
-  "staticFiles": {
-    "staticPath": "models",
-    "watcherGlob": "**"
   },
   "eslintIgnore": [
     "dist/"
