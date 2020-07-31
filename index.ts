@@ -1,15 +1,14 @@
 import * as facemesh from '@tensorflow-models/facemesh';
-import Stats from 'stats.js';
 import * as tf from '@tensorflow/tfjs-core';
 import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import Stats from 'stats.js';
 import dat from 'dat.gui';
-import { version } from '@tensorflow/tfjs-backend-wasm/dist/version';
 
 tfjsWasm.setWasmPath(
   `https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@${
-  version}/dist/tfjs-backend-wasm.wasm`);
+    tfjsWasm.version_wasm}/dist/tfjs-backend-wasm.wasm`);
 
 let model: facemesh.FaceMesh;
 let ctx: CanvasRenderingContext2D;
@@ -27,7 +26,7 @@ const state = {
   triangulateMesh: false
 };
 
-async function setupDatGui() {
+async function setupDatGui(): Promise<void> {
   const gui = new dat.GUI();
   gui.add(state, 'backend', ['wasm', 'webgl', 'cpu'])
     .onChange(async backend => {
@@ -46,7 +45,7 @@ async function setupCamera(): Promise<HTMLVideoElement> {
 
   const stream = await navigator.mediaDevices.getUserMedia({
     'audio': false,
-    'video': {facingMode: 'user'}
+    'video': { facingMode: 'user' }
   });
   video.srcObject = stream;
 
@@ -57,7 +56,7 @@ async function setupCamera(): Promise<HTMLVideoElement> {
   });
 }
 
-async function renderPrediction() {
+async function renderPrediction(): Promise<void> {
   stats.begin();
   const predictions = await model.estimateFaces(video);
   ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
@@ -82,7 +81,7 @@ async function renderPrediction() {
   requestAnimationFrame(renderPrediction);
 };
 
-async function initThreeJS() {
+async function initThreeJS(): Promise<void> {
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera();
   camera.position.x = 0;
@@ -106,14 +105,14 @@ async function initThreeJS() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   let threeJSContatiner = <HTMLDivElement>document.getElementById("threejs-container")
   threeJSContatiner.appendChild(renderer.domElement);
-  let gltf = await new GLTFLoader().loadAsync("leftear.glb");
+  let gltf = await new GLTFLoader().loadAsync("assets/leftear.glb");
   let model = gltf.scene.children[2];
   model.scale.set(0.6, 0.6, 0.6);
   model.name = "leftear";
   scene.add(model);
 }
 
-async function main() {
+async function main(): Promise<void> {
   await tf.setBackend(state.backend);
   setupDatGui();
 
@@ -133,7 +132,7 @@ async function main() {
   canvas.width = videoWidth;
   canvas.height = videoHeight;
   const canvasContainer = <HTMLElement>document.getElementsByClassName('canvas-wrapper')[0];
-  canvasContainer.style.width = `${videoWidth}px`; 
+  canvasContainer.style.width = `${videoWidth}px`;
   canvasContainer.style.height = `${videoHeight}px`;
 
   ctx = <CanvasRenderingContext2D>canvas.getContext('2d');

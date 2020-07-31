@@ -21,7 +21,6 @@
     "three": "^0.118.3"
   },
   "scripts": {
-    "build": "tsc",
     "watch": "cross-env NODE_ENV=development parcel index.html --no-hmr --target browser"
   },
   "browser": {

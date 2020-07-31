@@ -1,3 +1,4 @@
-dist
+dist/*
+!dist/assets
 .cache
 node_modules
