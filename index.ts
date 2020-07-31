@@ -90,25 +90,24 @@ async function initThreeJS(): Promise<void> {
   var ambientLight = new THREE.AmbientLight(0x404040, 100);
   scene.add(ambientLight);
   var light1 = new THREE.PointLight(0xc4c4c4, 10);
-  light1.position.set(100, 100, 20);
+  light1.position.set(200, 200, 10);
   scene.add(light1);
   var light2 = new THREE.PointLight(0xc4c4c4, 10);
-  light2.position.set(100, -100, 20);
+  light2.position.set(200, -200, 10);
   scene.add(light2);
   var light3 = new THREE.PointLight(0xc4c4c4, 10);
-  light3.position.set(-100, 100, 20);
+  light3.position.set(-200, 200, 10);
   scene.add(light3);
   var light4 = new THREE.PointLight(0xc4c4c4, 10);
-  light4.position.set(-100, -100, 20);
+  light4.position.set(-200, -200, 10);
   scene.add(light4);
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   let threeJSContatiner = <HTMLDivElement>document.getElementById("threejs-container")
   threeJSContatiner.appendChild(renderer.domElement);
-  let gltf = await new GLTFLoader().loadAsync("assets/leftear.glb");
-  let model = gltf.scene.children[2];
-  model.scale.set(0.6, 0.6, 0.6);
-  model.name = "leftear";
+  let gltf = await new GLTFLoader().loadAsync("assets/Covid19.glb");
+  let model = gltf.scene;
+  model.name = "Covid19";
   scene.add(model);
 }
 
