@@ -3,7 +3,7 @@ import Stats from 'stats.js';
 import tf from '@tensorflow/tfjs-core';
 import tfjsWasm from '@tensorflow/tfjs-backend-wasm';
 import THREE from 'three';
-import GLTFLoader from 'three-gltf-loader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import dat from 'dat.gui';
 import { version } from '@tensorflow/tfjs-backend-wasm/dist/version';
 
