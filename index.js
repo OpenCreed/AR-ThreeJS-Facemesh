@@ -30,29 +30,14 @@ tfjsWasm.setWasmPath(
   `https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@${
   version}/dist/tfjs-backend-wasm.wasm`);
 
-function isMobile() {
-  const isAndroid = /Android/i.test(navigator.userAgent);
-  const isiOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  return isAndroid || isiOS;
-}
-
 let model, ctx, videoWidth, videoHeight, video, canvas, scene, camera, renderer;
 
-const VIDEO_SIZE = 500;
-const mobile = isMobile();
-// Don't render the point cloud on mobile in order to maximize performance and
-// to avoid crowding limited screen space.
-const renderPointcloud = mobile === false;
 const stats = new Stats();
 const state = {
   backend: 'wasm',
   maxFaces: 1,
   triangulateMesh: false
 };
-
-if (renderPointcloud) {
-  state.renderPointcloud = true;
-}
 
 async function setupDatGui() {
   const gui = new dat.GUI();
@@ -73,13 +58,7 @@ async function setupCamera() {
 
   const stream = await navigator.mediaDevices.getUserMedia({
     'audio': false,
-    'video': {
-      facingMode: 'user',
-      // Only setting the video to a specified size in order to accommodate a
-      // point cloud, so on mobile devices accept the default size.
-      width: mobile ? undefined : VIDEO_SIZE,
-      height: mobile ? undefined : VIDEO_SIZE
-    },
+    'video': {facingMode: 'user'}
   });
   video.srcObject = stream;
 
@@ -92,33 +71,26 @@ async function setupCamera() {
 
 async function renderPrediction() {
   stats.begin();
-
   const predictions = await model.estimateFaces(video);
-  ctx.drawImage(
-    video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
   if (predictions.length > 0) {
-    predictions.forEach(prediction => {
-      const keypoints = prediction.scaledMesh;
+    const pointsData = predictions.map(prediction => {
+      let scaledMesh = prediction.scaledMesh;
+      return scaledMesh.map(point => ([-point[0], -point[1], -point[2]]));
     });
-    if (renderPointcloud && state.renderPointcloud) {
-      const pointsData = predictions.map(prediction => {
-        let scaledMesh = prediction.scaledMesh;
-        return scaledMesh.map(point => ([-point[0], -point[1], -point[2]]));
-      });
 
-      let flattenedPointsData = [];
-      for (let i = 0; i < pointsData.length; i++) {
-        flattenedPointsData = flattenedPointsData.concat(pointsData[i]);
-      }
-
-      //add points here..
-      scene.children[5].position.x = (flattenedPointsData[1][0] + 640 / 2) / 75;
-      scene.children[5].position.y = (flattenedPointsData[1][1] + 480 / 2) / 30;
+    let flattenedPointsData = [];
+    for (let i = 0; i < pointsData.length; i++) {
+      flattenedPointsData = flattenedPointsData.concat(pointsData[i]);
     }
+
+    //add points here..
+    scene.children[5].position.x = (flattenedPointsData[1][0] + 640 / 2) / 75;
+    scene.children[5].position.y = (flattenedPointsData[1][1] + 480 / 2) / 30;
   }
 
-  stats.end();
   renderer.render(scene, camera);
+  stats.end();
   requestAnimationFrame(renderPrediction);
 };
 
